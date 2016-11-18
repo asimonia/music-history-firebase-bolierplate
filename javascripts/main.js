@@ -71,6 +71,19 @@ $("#auth-btn").click(function(){
   });
 });
 
+$("#logout").click(function() {
+  user.logOut()
+  .then(function(){
+    $("#auth-btn").removeClass("is-hidden");
+    $("#logout").addClass("is-hidden");
+    $(".uiContainer--wrapper").html("");
+      //loadSongsToDOM();
+    });
+
+  
+
+   });
+
 // Remove song then reload the DOM w/out new song
 $(document).on("click", ".delete-btn", function () {
   console.log("click delete-btn");
@@ -80,6 +93,10 @@ $(document).on("click", ".delete-btn", function () {
     loadSongsToDOM();
   });
 
+});
+$("#view-songs").click(function() {
+    $(".uiContainer--wrapper").html("");
+    loadSongsToDOM();
 });
 
 
