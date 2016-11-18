@@ -2,14 +2,17 @@
 
 let $ = require('jquery'),
     db = require("./db-interaction"),
-    templates = require("./dom-builder");
+    templates = require("./dom-builder"),
+    user = require("./user");
     // login = require("./user");
 
 
 // Using the REST API
 function loadSongsToDOM() {
   console.log("Need to load some songs, Buddy");
-  db.getSongs()
+  let currentUser = user.getUser();
+
+  db.getSongs(currentUser)
   .then(function(songData){
     console.log("got Song Data", songData);
     var idArray = Object.keys(songData);
@@ -20,7 +23,7 @@ function loadSongsToDOM() {
     templates.makeSongList(songData);
   });
 }
-loadSongsToDOM(); //<--Move to auth section after adding login btn
+//loadSongsToDOM(); //<--Move to auth section after adding login btn
 
 // Send newSong data to db then reload DOM with updated song data
 $(document).on("click", ".save_new_btn", function() {
@@ -58,6 +61,15 @@ $(document).on("click", ".save_edit_btn", function() {
 
 
 });
+$("#auth-btn").click(function(){
+  user.logInGoogle()
+  .then(function(result){
+    let user = result.user;
+    $("#auth-btn").addClass("is-hidden");
+    $("#logout").removeClass("is-hidden");
+    loadSongsToDOM();
+  });
+});
 
 // Remove song then reload the DOM w/out new song
 $(document).on("click", ".delete-btn", function () {
@@ -78,7 +90,8 @@ function buildSongObj() {
     title: $("#form--title").val(),
     artist: $("#form--artist").val(),
     album: $("#form--album").val(),
-    year: $("#form--year").val()
+    year: $("#form--year").val(),
+    uid: user.getUser()
   };
   return songObj;
 }
